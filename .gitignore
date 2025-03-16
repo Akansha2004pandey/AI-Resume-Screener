@@ -1,0 +1,4 @@
+.env
+firebase_config.json
+pyrebase_config.json
+myenv
