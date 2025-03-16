@@ -33,6 +33,86 @@ def extract_text_from_docx(uploaded_file):
         doc = docx.Document(uploaded_file)
         return " ".join([para.text for para in doc.paragraphs])
     return None
+def structure_with_gemini(resume_text, job_description):
+ 
+    resume_sections = extract_sections_from_text(resume_text)
+    job_desc_sections = extract_sections_from_text(job_description)
+
+ 
+    missing_suggestions = extract_missing_elements(resume_text, job_description)
+
+  
+    resume_str = format_structured_data(resume_sections)
+    job_desc_str = format_structured_data(job_desc_sections)
+
+    return resume_str, job_desc_str, missing_suggestions
+
+def extract_sections_from_text(text):
+    try:
+        prompt = f"Please extract the following sections from this text: Tech Stack, Experience, Skills, Education, Certifications, and Responsibilities. Here is the text:\n\n{text}\n\nProvide each section in a structured format."
+        
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt,
+        )
+        structured_data = response.text
+        return structured_data
+    except Exception as e:
+        st.warning(f"Error extracting sections with Gemini: {e}")
+        return ""
+
+
+def extract_missing_elements(resume_text, job_description):
+    try:
+        prompt = f"""
+        Please compare the following resume text with the job description and suggest any missing skills, experience, certifications, or other improvements. Additionally, provide suggestions to improve the clarity and structure of the resume sections if necessary.
+        
+        Resume Text:
+        {resume_text}
+        
+        Job Description:
+        {job_description}
+        
+        Suggestions:
+        - Identify missing skills or experience that are important for the job.
+        - Suggest improvements for enhancing clarity and structure of the resume.
+        - Provide tips for making the resume stand out to employers.
+        """
+        
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt,
+        )
+        suggestions = response.text
+        return suggestions
+    except Exception as e:
+        st.warning(f"Error extracting missing elements with Gemini: {e}")
+        return "No suggestions available."
+
+def preprocess_text(text):
+    return text.lower()
+def format_structured_data(data):
+    return data.strip()
+
+def compute_similarity(resume_text, job_description):
+    if resume_text and job_description:
+        resume_text = preprocess_text(resume_text)
+        job_description = preprocess_text(job_description)
+        resume_embedding = model.encode(resume_text)
+        job_desc_embedding = model.encode(job_description)
+        similarity_score = cosine_similarity([resume_embedding], [job_desc_embedding])[0][0]
+        return round(similarity_score * 100, 2)
+    return 0.0
+
+
+def get_profile_strength(score):
+    if score >= 75:
+        return "Strong Profile", "badge-success", "🎯"
+    elif score >= 50:
+        return "You Can Apply", "badge-warning", "⚖️"
+    else:
+        return "Weak Profile", "badge-danger", "🚫"
+
 
 def ask_gemini(resume_text, user_question):
     try:
