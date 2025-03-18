@@ -48,7 +48,7 @@ AI Resume Screener & Builder is an intelligent system designed to **analyze, enh
 ### Installation Steps
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/ai-resume-screener.git
+git clone https://github.com/Akansha2004pandey/ai-resume-screener.git
 cd ai-resume-screener
 
 # Install dependencies
