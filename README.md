@@ -76,7 +76,7 @@ This project is **open-source** under the MIT License.
 
 ## 📞 Contact
 For any queries or collaboration:
-📧 **Email:** yourname@example.com  
+📧 **Email:** akanshaoptimist@gmail.com  
 🌐 **GitHub:** [Akansha2004pandey](https://github.com/Akansha2004pandey)
 
 ---
